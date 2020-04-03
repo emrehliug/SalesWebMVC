@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using SalesWebMVC.Data;
+using SalesWebMVC.Services;
 
 namespace SalesWebMVC
 {
@@ -40,6 +41,7 @@ namespace SalesWebMVC
                     options.UseSqlServer(Configuration.GetConnectionString("SalesWebMVCContext")));
 
             services.AddScoped<SeedingService>();
+            services.AddScoped<VendedorService>();
 
         }
 
