@@ -21,7 +21,6 @@ namespace SalesWebMVC.Services
 
         public void AdicionarVendedor(Vendedor vendedor)
         {
-             vendedor.Departamento = _context.Departamento.First();
             _context.Add(vendedor);
             _context.SaveChanges();
         }

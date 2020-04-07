@@ -1,38 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SalesWebMVC.Models;
 using SalesWebMVC.Services;
+using SalesWebMVC.Models.ViewModels;
 
 namespace SalesWebMVC.Controllers
 {
     public class VendedoresController : Controller
     {
-        private readonly VendedorService _service;
+        private readonly VendedorService vendedorService;
+        private readonly DepartamentoService departamentoService;
 
-        public VendedoresController(VendedorService service)
+        public VendedoresController(VendedorService vendedor, DepartamentoService departamento)
         {
-            _service = service;
+            vendedorService = vendedor;
+            departamentoService = departamento;
+
         }
 
         public IActionResult Index()
         {
-            var list = _service.FindAll();
+            var list = vendedorService.FindAll();
             return View(list);
         }
 
         public IActionResult Create()
         {
-            return View();
+            var departamentos = departamentoService.FindAll();
+            var viewModel = new VendedorFormViewModel() { Departamentos = departamentos };
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Vendedor vendedor)
         {
-            _service.AdicionarVendedor(vendedor);
+            vendedorService.AdicionarVendedor(vendedor);
             return RedirectToAction(nameof(Index));
         }
     }
