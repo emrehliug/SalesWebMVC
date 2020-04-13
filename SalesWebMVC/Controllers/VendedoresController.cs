@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SalesWebMVC.Services.Exceptions;
 using System.Diagnostics;
 using System;
+using System.Threading.Tasks;
 
 namespace SalesWebMVC.Controllers
 {
@@ -21,42 +22,42 @@ namespace SalesWebMVC.Controllers
 
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = vendedorService.FindAll();
+            var list = await vendedorService.FindAllAsync();
             return View(list);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departamentos = departamentoService.FindAll();
+            var departamentos = await departamentoService.FindAllAsync();
             var viewModel = new VendedorFormViewModel() { Departamentos = departamentos };
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Vendedor vendedor)
+        public async Task<IActionResult> Create(Vendedor vendedor)
         {
             if (!ModelState.IsValid)
             {
-                var departamentos = departamentoService.FindAll();
+                var departamentos = await departamentoService.FindAllAsync();
                 var viewModel = new VendedorFormViewModel { Departamentos = departamentos, Vendedor = vendedor };
                 return View(viewModel);
             }
 
-            vendedorService.AdicionarVendedor(vendedor);
+            await vendedorService.AdicionarVendedorAsync(vendedor);
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if(id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
             }
             
-            var obj = vendedorService.FindId(id.Value);
+            var obj = await vendedorService.FindIdAsync(id.Value);
             
             if(obj == null)
             {
@@ -68,20 +69,20 @@ namespace SalesWebMVC.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            vendedorService.RemoverVendedor(id);
+            await vendedorService.RemoverVendedorAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
             }
 
-            var obj = vendedorService.FindId(id.Value);
+            var obj = await vendedorService.FindIdAsync(id.Value);
 
             if (obj == null)
             {
@@ -91,20 +92,20 @@ namespace SalesWebMVC.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if(id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id não fornecido" });
             }
 
-            var obj = vendedorService.FindId(id.Value);
+            var obj = await vendedorService.FindIdAsync(id.Value);
             if(obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
-            List<Departamento> departamentos = departamentoService.FindAll();
+            List<Departamento> departamentos = await departamentoService.FindAllAsync();
             VendedorFormViewModel vendedor = new VendedorFormViewModel() { Vendedor = obj, Departamentos = departamentos };
             
             return View(vendedor);
@@ -112,7 +113,7 @@ namespace SalesWebMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, VendedorFormViewModel obj)
+        public async Task<IActionResult> Edit(int id, VendedorFormViewModel obj)
         {
             if (!ModelState.IsValid)
             {
@@ -126,7 +127,7 @@ namespace SalesWebMVC.Controllers
 
             try
             {
-                vendedorService.Atualizar(obj.Vendedor);
+                await vendedorService.AtualizarAsync(obj.Vendedor);
                 return RedirectToAction(nameof(Index));
             }
             catch(ApplicationException e)
